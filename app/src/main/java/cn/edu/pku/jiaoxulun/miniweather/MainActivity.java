@@ -1,5 +1,6 @@
 package cn.edu.pku.jiaoxulun.miniweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
@@ -35,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int UPDATE_TODAY_WEATHER = 1;
 
     private ImageView mUpdateBtn;
+
+    private ImageView mCitySelect;
 
     private TextView cityTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv, temperatureTv, climateTv, windTv, city_name_Tv;
     private ImageView weatherImg, pmImg;
@@ -91,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         temperatureTv.setText(todayWeather.getLow() + "~" + todayWeather.getHigh());
         climateTv.setText(todayWeather.getType());
         windTv.setText("风力" + todayWeather.getFengli());
-        switch (todayWeather.getType()){
+        switch (todayWeather.getType()) {
             case "暴雪":
                 imageId = R.drawable.biz_plugin_weather_baoxue;
                 break;
@@ -168,6 +171,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
         mUpdateBtn.setOnClickListener(this);
 
+        mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
+        mCitySelect.setOnClickListener(this);
+
         initView();
     }
 
@@ -176,8 +182,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (view.getId() == R.id.title_update_btn) {
 
             SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
-            String cityCode = sharedPreferences.getString("main_city_code", "101010100");
-            Log.d("myWeather", cityCode);
+            String cityCode = sharedPreferences.getString("main_city_code","101010100");
+            Log.d("myWeatherc", cityCode);
 
             if (NetUtil.getNetworkState(this) != NetUtil.NETWORK_NONE) {
                 Log.d("myWeather", "网络O的K");
@@ -187,6 +193,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(MainActivity.this, "网络GG！", Toast.LENGTH_LONG).show();
             }
 
+        }
+        if (view.getId() == R.id.title_city_manager) {
+            Intent i = new Intent(this, SelectCity.class);
+            startActivityForResult(i, 1);
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            String newCityCode = data.getStringExtra("cityCode");
+            SharedPreferences.Editor editor = getSharedPreferences("config",MODE_APPEND).edit();
+            editor.putString("main_city_code", newCityCode);
+            editor.commit();
+            Log.d("myweather", "selected cityCode:" + newCityCode);
+            if(NetUtil.getNetworkState(this)!=NetUtil.NETWORK_NONE){
+                Log.d("myWeather","网络OK");
+                queryWeatherCode(newCityCode);
+            } else {
+                Log.d("myweather","网络GG");
+                Toast.makeText(MainActivity.this,"网络GG",Toast.LENGTH_LONG).show();
+            }
         }
     }
 
