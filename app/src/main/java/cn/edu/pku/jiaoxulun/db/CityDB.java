@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.edu.pku.jiaoxulun.bean.City;
+import cn.edu.pku.jiaoxulun.miniweather.R;
 
 /**
  * Created by jiaoxulun on 2017/11/7.
