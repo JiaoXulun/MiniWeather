@@ -133,4 +133,15 @@ public class TodayWeather {
 
 
     }
+
+    @Override
+    public Object clone() {
+        TodayWeather cloneObj = null;
+        try{
+            cloneObj = (TodayWeather) super.clone();
+        }catch(CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return cloneObj;
+    }
 }

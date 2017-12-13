@@ -6,9 +6,11 @@ import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.HttpAuthHandler;
 import android.widget.ImageView;
@@ -27,11 +29,13 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.edu.pku.jiaoxulun.bean.TodayWeather;
 import cn.edu.pku.jiaoxulun.util.NetUtil;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, ViewPager.OnPageChangeListener {
 
     private static final int UPDATE_TODAY_WEATHER = 1;
 
@@ -41,6 +45,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView cityTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv, temperatureTv, climateTv, windTv, city_name_Tv;
     private ImageView weatherImg, pmImg;
+
+    //定义未来6天天气所需的变量
+    private ViewPager viewPager;
+    private ViewPagerAdapter viewPagerAdapter;
+    private List<View> views;
+    private ImageView[] dots;
+    private int[] ids = {R.id.iv1_weather, R.id.iv2_weather};
+
+    private TextView w1_date1, w1_temperature1, w1_climate1, w1_wind1;
+    private ImageView w1_img1;
+    private TextView w1_date2, w1_temperature2, w1_climate2, w1_wind2;
+    private ImageView w1_img2;
+    private TextView w1_date3, w1_temperature3, w1_climate3, w1_wind3;
+    private ImageView w1_img3;
+    private TextView w2_date1, w2_temperature1, w2_climate1, w2_wind1;
+    private ImageView w2_img1;
+    private TextView w2_date2, w2_temperature2, w2_climate2, w2_wind2;
+    private ImageView w2_img2;
+    private TextView w2_date3, w2_temperature3, w2_climate3, w2_wind3;
+    private ImageView w2_img3;
 
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
@@ -175,6 +199,97 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCitySelect.setOnClickListener(this);
 
         initView();
+        initViews();
+        initDots();
+    }
+
+    private void initViews(){
+        //通过LayoutInflater来动态加载这些视图
+        LayoutInflater inflater = LayoutInflater.from(this); //获取LayoutInflater对象
+        views = new ArrayList<View>(); //构造View类型的数组
+        //向views集合中加入三个view对象
+        //通过LayoutInflater动态加载布局文件并转化的
+        views.add(inflater.inflate(R.layout.weather_p1, null));
+        views.add(inflater.inflate(R.layout.weather_p2, null));
+        //实例化一个ViewPagerAdapter对象
+        viewPagerAdapter = new ViewPagerAdapter(views, this);
+        //通过findViewById方法获取ViewPager对象
+        viewPager = (ViewPager) findViewById(R.id.viewpager_weather);
+        //设置ViewPager的适配器
+        viewPager.setAdapter(viewPagerAdapter);
+        //为ViewPager控件设置页面变化的监听事件
+        viewPager.setOnPageChangeListener(this);
+
+        //初始化所有控件
+        w1_date1 = (TextView)views.get(0).findViewById(R.id.w1_date1);
+        w1_temperature1 = (TextView)views.get(0).findViewById(R.id.w1_temperature1);
+        w1_climate1 = (TextView)views.get(0).findViewById(R.id.w1_climate1);
+        w1_wind1 = (TextView)views.get(0).findViewById(R.id.w1_wind1);
+        w1_img1 = (ImageView)views.get(0).findViewById(R.id.w1_img1);
+
+        w1_date2 = (TextView)views.get(0).findViewById(R.id.w1_date2);
+        w1_temperature2 = (TextView)views.get(0).findViewById(R.id.w1_temperature2);
+        w1_climate2 = (TextView)views.get(0).findViewById(R.id.w1_climate2);
+        w1_wind2 = (TextView)views.get(0).findViewById(R.id.w1_wind2);
+        w1_img2 = (ImageView)views.get(0).findViewById(R.id.w1_img2);
+
+        w1_date3 = (TextView)views.get(0).findViewById(R.id.w1_date3);
+        w1_temperature3 = (TextView)views.get(0).findViewById(R.id.w1_temperature3);
+        w1_climate3 = (TextView)views.get(0).findViewById(R.id.w1_climate3);
+        w1_wind3 = (TextView)views.get(0).findViewById(R.id.w1_wind3);
+        w1_img3 = (ImageView)views.get(0).findViewById(R.id.w1_img3);
+
+        w2_date1 = (TextView)views.get(1).findViewById(R.id.w2_date1);
+        w2_temperature1 = (TextView)views.get(1).findViewById(R.id.w2_temperature1);
+        w2_climate1 = (TextView)views.get(1).findViewById(R.id.w2_climate1);
+        w2_wind1 = (TextView)views.get(1).findViewById(R.id.w2_wind1);
+        w2_img1 = (ImageView)views.get(1).findViewById(R.id.w2_img1);
+
+        w2_date2 = (TextView)views.get(1).findViewById(R.id.w2_date2);
+        w2_temperature2 = (TextView)views.get(1).findViewById(R.id.w2_temperature2);
+        w2_climate2 = (TextView)views.get(1).findViewById(R.id.w2_climate2);
+        w2_wind2 = (TextView)views.get(1).findViewById(R.id.w2_wind2);
+        w2_img2 = (ImageView)views.get(1).findViewById(R.id.w2_img2);
+
+        w2_date3 = (TextView)views.get(1).findViewById(R.id.w2_date3);
+        w2_temperature3 = (TextView)views.get(1).findViewById(R.id.w2_temperature3);
+        w2_climate3 = (TextView)views.get(1).findViewById(R.id.w2_climate3);
+        w2_wind3 = (TextView)views.get(1).findViewById(R.id.w2_wind3);
+        w2_img3 = (ImageView)views.get(1).findViewById(R.id.w2_img3);
+    }
+
+    //将三个小圆点控件对象，存入dots数组
+    void initDots(){
+        dots = new ImageView[views.size()];
+        for(int i=0; i<views.size(); i++)
+            dots[i] = (ImageView) findViewById(ids[i]);
+    }
+
+    /*
+    增加页面变化的监听事件，动态地修改三个导航小圆点的属性
+     */
+
+    //重写ViewPager.OnPageChangeListener接口的方法
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    //视图发生变化后调用此方法，动态修改小圆点属性，实现相应的导航效果
+    @Override
+    public void onPageSelected(int position) {
+        for(int a=0; a<ids.length; a++){
+            //若是选中的视图，则图片src属性为被选中的效果
+            if(a == position)
+                dots[a].setImageResource(R.drawable.page_indicator_focused);
+            else
+                dots[a].setImageResource(R.drawable.page_indicator_unfocused);
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
     }
 
     @Override
